@@ -5,28 +5,52 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "https://esm.sh/v135/@supabase/functions-js@2.4.2/src/edge-runtime.d.ts"
 import { corsHeaders } from "../_shared/cors.ts";
+import { Redis } from "@upstash/redis";
+import {Ratelimit} from "@upstash/rate-limit"
+// import { CreateClient } from "@supabase/supabase-js";
 
 console.log("Hello from Functions!")
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
-  const { secret } = await req.json()
-  if (secret == "follow_the_white_rabbit_000") {
-    const data = {
-      message: `CONGRATULATIONS, you just captured the flag!`,
+  try {
+    // const supabaseClient = CreateClient(Deno.env)
+    const redis = new Redis({
+      url: Deno.env.get("UPSTASH_REDIS_REST_URL")!,
+      token: Deno.env.get("UPSTASH_REDIS_REST_TOKEN")!,
+    })
+    if (req.method === 'OPTIONS') {
+      return new Response('ok', { headers: corsHeaders })
     }
-    return new Response(
-      JSON.stringify(data),
-      { headers: {...corsHeaders, "Content-Type": "application/json" }, status: 200 },
-    )
+    const ratelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "60 s"),
+      analytics: true,
+    })
+    const identifier = "api";
+    const {success} = await ratelimit.limit(identifier);
+    if (!success) {
+      throw new Error("Requests limit exceeded, slow down dude!")
+    }
+  
+    const { secret } = await req.json()
+    if (secret == "follow_the_white_rabbit_000") {
+      const data = {
+        message: `CONGRATULATIONS, you just captured the flag!`,
+      }
+      return new Response(
+        JSON.stringify(data),
+        { headers: {...corsHeaders, "Content-Type": "application/json" }, status: 200 },
+      )
+      
+    } else {
+      return new Response(
+        JSON.stringify({message: "ah ah ah you didn't say the magic word!"}),
+        { headers: {...corsHeaders, "Content-Type": "application/json" }, status: 401 },
+      )
+    }
     
-  } else {
-    return new Response(
-      JSON.stringify("ah ah ah you didn't say the magic word!"),
-      { headers: {...corsHeaders, "Content-Type": "application/json" }, status: 403 },
-    )
+  } catch (error) {
+    return new Response(JSON.stringify({error:error.message}), {headers: {...corsHeaders, "Content-Type": "application/json"}, status: 429}) 
   }
 
 })

@@ -311,14 +311,13 @@ const enterKey = (e) => {
             default:
                 if (isSudoing.current) {
                 const secret = {"secret": cmd}
-                // eslint-disable-next-line no-unused-vars
-                let response = await axios.post(import.meta.env.VITE_LOCAL_API, secret, {headers: {"Content-Type": "application/json", Authorization: import.meta.env.VITE_LOCAL_ANON_KEY}}).catch(e =>{console.log("error");});
-                if (response && response.status ==  200) {
+                try {
+                    const response = await axios.post(import.meta.env.VITE_PROD_API, secret, {headers: {"Content-Type": "application/json", Authorization: import.meta.env.VITE_SUPABASE_ANON_KEY}})
                     addLine(response.data.message, "colors2", 500)
-                } else {
-                    addLine("ah ah ah you didn't say the magic word", "colors2", 200)
+                } catch (error) {
+                    addLine(error.response.data.message ?? error.response.data.error, "colors2", 500)
                 }
-                isSudoing.current =false
+                isSudoing.current = false
                     break
                 } else {
                     addLine("<span class='inherit'>Command not found.</span>", "error", 100)

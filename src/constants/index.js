@@ -338,7 +338,7 @@ import {
       id: 5,
       name: "4rc4d3",
       description:
-        "Personal project for 90s Arcade Cabinet. Through android app it is possible to enter virtual tokens. The app integrates a mini-game in Unity3D to earn virtual coins.",
+        "Personal project for 90s Arcade Cabinet. Through android app it is possible to enter virtual tokens. The app integrates a mini-game in Unity to earn virtual coins.",
       tags: [
         {
           name: "Flutter",
@@ -403,7 +403,7 @@ import {
       id: 8,
       name: "This portfolio",
       description:
-        "The portfolio website you are visiting right now was my first React project.It was made basically with the intent of learnig the 'React' framework",
+        "The portfolio website you are visiting right now was my first React project. It was made basically with the intent of learnig the 'React' framework and the basics of 'three.js'",
       tags: [
         {
           name: "React",
@@ -416,6 +416,10 @@ import {
         {
           name: "Three.js",
           color: "orange-text-gradient",
+        },
+        {
+          name: "Supabase",
+          color: "green-text-gradient",
         },
       ],
       image: site,
