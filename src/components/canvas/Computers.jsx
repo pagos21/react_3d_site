@@ -86,7 +86,6 @@ const ComputersCanvas = () => {
       </Suspense>
     </Canvas>
     } else if(!isMobile && !isClicked) {
-      console.log("!click");
       return(
         <div className="flex justify-center absolute top-[20rem] left-[100px]">
         <motion.div className='w-[180px] green-pink-gradient p-[1px] rounded-[20px] shadow-card'>

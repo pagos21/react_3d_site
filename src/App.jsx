@@ -24,7 +24,6 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 const App = () => {
-  console.log(import.meta.env.VITE_FIREBASE_API_KEY);
   return (
     <BrowserRouter>
     <Routes>
